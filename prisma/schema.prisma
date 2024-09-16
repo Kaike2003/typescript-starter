@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuarios {
+  id_usuario     String           @id @default(uuid())
+  nome_usuario   String
+  senha          String
+  email          String           @unique
+  codigo         String           @unique
+  tipo_usuario   TipoUsuario
+  ocupado        Boolean          @default(false)
+  autenticado    Boolean          @default(false)
+  banido         Boolean          @default(false)
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt()
+  Cortes_cabelos Cortes_cabelos[]
+
+  @@map("usuarios")
+}
+
+enum TipoUsuario {
+  ADMIN
+  BARBEIRO
+  NORMAL
+}
+
+model Cortes_cabelos {
+  id_corte_cabelo String   @id @default(uuid())
+  nome_corte      String
+  nome_barbeiro   String
+  duracao         String
+  marcacao        DateTime
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt()
+
+  usuarios           Usuarios @relation(fields: [usuariosId_usuario], references: [id_usuario])
+  usuariosId_usuario String
+
+  @@map("cortes_cabelos")
+}
