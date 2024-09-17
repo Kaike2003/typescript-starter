@@ -14,7 +14,7 @@ export class AdminRepository {
     private readonly bcryptService: BcryptService,
   ) {}
 
-  async existeAdmin(email: string): Promise<boolean> {
+  private async existeAdmin(email: string): Promise<boolean> {
     const asAdmin = await this.prismaService.usuario.findUnique({
       where: {
         email: email,
@@ -28,7 +28,7 @@ export class AdminRepository {
     }
   }
 
-  async existeCodigo(codigo: string): Promise<boolean> {
+  private async existeCodigo(codigo: string): Promise<boolean> {
     const asAdmin = await this.prismaService.usuario.findUnique({
       where: {
         codigo: codigo,
@@ -42,7 +42,7 @@ export class AdminRepository {
     }
   }
 
-  async existeAutenticado(codigo: string): Promise<boolean> {
+  private async existeAutenticado(codigo: string): Promise<boolean> {
     const asAdmin = await this.prismaService.usuario.findUnique({
       where: {
         codigo: codigo,
