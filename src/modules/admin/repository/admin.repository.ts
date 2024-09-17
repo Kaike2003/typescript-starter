@@ -15,7 +15,7 @@ export class AdminRepository {
   ) {}
 
   async existeAdmin(email: string): Promise<boolean> {
-    const asAdmin = await this.prismaService.usuarios.findUnique({
+    const asAdmin = await this.prismaService.usuario.findUnique({
       where: {
         email: email,
       },
@@ -29,12 +29,11 @@ export class AdminRepository {
   }
 
   async existeCodigo(codigo: string): Promise<boolean> {
-    const asAdmin = await this.prismaService.usuarios.findUnique({
+    const asAdmin = await this.prismaService.usuario.findUnique({
       where: {
         codigo: codigo,
       },
     });
-
 
     if (asAdmin?.codigo === codigo) {
       return true;
@@ -44,7 +43,7 @@ export class AdminRepository {
   }
 
   async existeAutenticado(codigo: string): Promise<boolean> {
-    const asAdmin = await this.prismaService.usuarios.findUnique({
+    const asAdmin = await this.prismaService.usuario.findUnique({
       where: {
         codigo: codigo,
       },
@@ -70,21 +69,21 @@ export class AdminRepository {
       throw new HttpException('Já existe um utilizador com esse código', 400);
     }
 
-    return await this.prismaService.usuarios
+    return await this.prismaService.usuario
       .create({
         data: {
-          nome_usuario: data.nome_usuario,
+          nome: data.nome,
           email: data.email,
           senha: await this.bcryptService.encriptar(data.senha),
           codigo: codigo,
-          tipo_usuario: 'ADMIN',
+          tipo: 'ADMIN',
         },
       })
       .then(async () => {
         const res = {
           email: data.email,
           codigo: codigo,
-          nome: data.nome_usuario,
+          nome: data.nome,
         };
         await this.nodemailerService.criarConta(res);
         return 'Conta criada com sucesso.';
@@ -107,7 +106,7 @@ export class AdminRepository {
       throw new HttpException('Código de autenticação inválido', 400);
     }
 
-    return await this.prismaService.usuarios
+    return await this.prismaService.usuario
       .update({
         where: {
           codigo: codigo,
@@ -125,8 +124,8 @@ export class AdminRepository {
   }
 
   async listarTodos() {
-    return await this.prismaService.usuarios.findMany({
-      where: { tipo_usuario: 'ADMIN' },
+    return await this.prismaService.usuario.findMany({
+      where: { tipo: 'ADMIN' },
     });
   }
 }

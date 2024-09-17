@@ -7,21 +7,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuarios {
-  id_usuario     String           @id @default(uuid())
-  nome_usuario   String
-  senha          String
-  email          String           @unique
-  codigo         String           @unique
-  tipo_usuario   TipoUsuario
-  ocupado        Boolean          @default(false)
-  autenticado    Boolean          @default(false)
-  banido         Boolean          @default(false)
-  created_at     DateTime         @default(now())
-  updated_at     DateTime         @updatedAt()
-  Cortes_cabelos Cortes_cabelos[]
+model Usuario {
+  id                 String               @id @default(uuid())
+  nome               String
+  senha              String
+  email              String               @unique
+  codigo             String               @unique
+  tipo               TipoUsuario
+  ocupado            Boolean              @default(false)
+  autenticado        Boolean              @default(false)
+  banido             Boolean              @default(false)
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt()
+  UsuarioCorteCabelo UsuarioCorteCabelo[]
 
-  @@map("usuarios")
+  @@map("usuario")
 }
 
 enum TipoUsuario {
@@ -30,17 +30,42 @@ enum TipoUsuario {
   NORMAL
 }
 
-model Cortes_cabelos {
-  id_corte_cabelo String   @id @default(uuid())
-  nome_corte      String
-  nome_barbeiro   String
-  duracao         String
-  marcacao        DateTime
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt()
+model CorteCabelo {
+  id                 String               @id @default(uuid())
+  nome               String
+  tipo               TipoCabelo           @relation(fields: [tipoCabeloId], references: [id])
+  marcacao           Marcacao             @relation(fields: [marcacaoId], references: [id])
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt()
+  tipoCabeloId       String
+  marcacaoId         String
+  UsuarioCorteCabelo UsuarioCorteCabelo[]
 
-  usuarios           Usuarios @relation(fields: [usuariosId_usuario], references: [id_usuario])
-  usuariosId_usuario String
+  @@map("cortedecabelo")
+}
 
-  @@map("cortes_cabelos")
+model TipoCabelo {
+  id          String        @id @default(uuid())
+  nome        String
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt()
+  CorteCabelo CorteCabelo[]
+
+  @@map("tipodecabelo")
+}
+
+model Marcacao {
+  id          String        @id @default(uuid())
+  duracao     String
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt()
+  CorteCabelo CorteCabelo[]
+}
+
+model UsuarioCorteCabelo {
+  id            String      @id @default(uuid())
+  usuario       Usuario     @relation(fields: [usuarioId], references: [id])
+  usuarioId     String
+  corteCabelo   CorteCabelo @relation(fields: [corteCabeloId], references: [id])
+  corteCabeloId String
 }
